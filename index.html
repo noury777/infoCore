@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>InfoCore | BEN.Noureddine</title>
+    <style>
+        :root {
+            --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
+            --primary: #3b82f6; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
+            --border: rgba(255,255,255,0.1);
+            --tp-bg: #334155;
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; margin: 0; padding: 10px; }
+        .container { max-width: 720px; margin: auto; padding-bottom: 180px; }
+
+        header { text-align: center; padding: 35px 0; border-bottom: 1px solid var(--border); margin-bottom: 25px; }
+        header h1 { font-size: 2.5rem; margin: 0; color: var(--primary); letter-spacing: -1.5px; font-weight: 900; }
+        header .brand-sub { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; font-weight: bold; }
+
+        .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 30px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        
+        .sem-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-left: 6px solid var(--primary); padding-left: 15px; flex-wrap: wrap; gap: 15px; }
+        .stats-group { display: flex; gap: 12px; align-items: center; }
+        
+        .stat-box { 
+            min-width: 130px; height: 50px; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; border-radius: 12px; 
+            font-weight: 800; border: 1px solid var(--border); transition: all 0.4s ease;
+            background: rgba(255,255,255,0.05);
+        }
+        .stat-label { font-size: 0.55rem; text-transform: uppercase; opacity: 0.6; margin-bottom: 2px; }
+        .stat-value { font-size: 1.1rem; }
+
+        .moy-red { color: var(--danger) !important; background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
+        .moy-green { color: var(--success) !important; background: rgba(34, 197, 94, 0.1) !important; border-color: rgba(34, 197, 94, 0.2) !important; }
+
+        .ue-container { margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; background: rgba(255,255,255,0.02); }
+        .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.75rem; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+
+        .mod-row { margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); }
+        .mod-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .mod-name { font-size: 0.95rem; font-weight: 600; flex: 1; color: #e2e8f0; }
+        
+        .tp-container {
+            display: flex; align-items: center; gap: 10px; background: var(--tp-bg);
+            padding: 5px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e293b; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: #94a3b8; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--success); }
+        input:checked + .slider:before { transform: translateX(16px); background-color: white; }
+
+        .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        input[type=text] { 
+            background: #334155; border: 2px solid #475569; border-radius: 10px;
+            color: white; padding: 12px 5px; width: 100%; outline: none; font-size: 1.1rem; text-align: center; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); background: #3d4b5f; }
+        input.invalid { border-color: var(--danger) !important; background: rgba(239, 68, 68, 0.15) !important; color: var(--danger) !important; }
+
+        .input-label { display: block; font-size: 0.65rem; text-align: center; margin-bottom: 6px; opacity: 0.5; font-weight: bold; }
+        .no-display { display: none; }
+        .tp-hidden { visibility: hidden; pointer-events: none; opacity: 0; }
+
+        .footer-bilan {
+            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.98);
+            backdrop-filter: blur(20px); border-top: 4px solid var(--primary); padding: 15px 20px 12px 20px;
+            z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+        }
+        .bilan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: center; text-align: center; margin-bottom: 12px; }
+        .f-val { font-size: 1.5rem; font-weight: 900; display: block; }
+        .verdict-chip { border: 2px solid; padding: 8px; border-radius: 12px; font-weight: 900; font-size: 0.75rem; transition: 0.3s; }
+        
+        .copyright { text-align: center; font-size: 0.7rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; }
+
+        @media (min-width: 600px) {
+            .mod-row { display: flex; align-items: center; gap: 30px; }
+            .mod-meta { margin-bottom: 0; width: 45%; }
+            .inputs-grid { width: 55%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>InfoCore</h1>
+        <div class="brand-sub">Scientific Grading System</div>
+    </header>
+
+    <div id="calculator-app"></div>
+
+    <div class="footer-bilan">
+        <div class="bilan-grid">
+            <div><span style="font-size:0.6rem; opacity:0.6; font-weight:bold;">MOY. ANNUELLE</span><span class="f-val" id="total-moy">--</span></div>
+            <div><span style="font-size:0.6rem; opacity:0.6; font-weight:bold;">TOTAL CRÉDITS</span><span class="f-val" id="total-cred" style="color:var(--warning)">--</span></div>
+            <div id="verdict" class="verdict-chip">EN ATTENTE</div>
+        </div>
+        <div class="copyright">&copy; 2024-2026 Developed by <strong>BEN.Noureddine</strong></div>
+    </div>
+</div>
+
+<script>
+const bulletinStructure = {
+    s1: [
+        { name: "UEF 1 (Fondamentale Mathématiques)", mods: [{n: "Analyse Mathématique 1", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 1", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEF 2 (Fondamentale Informatique)", mods: [{n: "Algorithmique et ASD 1", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 1", c: 3, cr: 5, hasTD:true}]},
+        { name: "UED (Découverte)", mods: [{n: "Électricité Générale", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEM (Méthodologique)", mods: [{n: "Logiciel Libre", c: 1, cr: 2, hasTD:false}]},
+        { name: "UET (Transversale)", mods: [{n: "Langue Étrangère", c: 1, cr: 2, hasTD:false}]}
+    ],
+    s2: [
+        { name: "UEF 1 (Fondamentale Mathématiques)", mods: [{n: "Analyse Mathématique 2", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 2", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEF 2 (Fondamentale Informatique)", mods: [{n: "Algorithmique et ASD 2", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 2", c: 3, cr: 5, hasTD:true}]},
+        { name: "UED (Découverte)", mods: [{n: "Électronique Fondamentale", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEM (Méthodologique)", mods: [{n: "Logique Mathématique", c: 2, cr: 4, hasTD:true}, {n: "Introduction à l'IA", c: 1, cr: 2, hasTD:true}]}
+    ]
+};
+
+function init() {
+    const root = document.getElementById('calculator-app');
+    ['s1', 's2'].forEach(s => {
+        let html = `<div class="card"><div class="sem-title"><h2>Semestre ${s=='s1'?'1':'2'}</h2><div class="stats-group"><div class="stat-box"><span class="stat-label">Crédits</span><span class="stat-value" id="cred-${s}">--</span></div><div class="stat-box" id="moy-box-${s}"><span class="stat-label">Moyenne</span><span class="stat-value" id="moy-${s}">--</span></div></div></div>`;
+        bulletinStructure[s].forEach((ue, uIdx) => {
+            html += `<div class="ue-container"><div class="ue-header"><span>${ue.name}</span><span id="ue-moy-${s}-${uIdx}">--</span></div>`;
+            ue.mods.forEach((m, mIdx) => {
+                const id = `${s}-${uIdx}-${mIdx}`;
+                html += `<div class="mod-row"><div class="mod-meta"><div class="mod-name">${m.n}</div>${m.hasTP ? `<div class="tp-container"><span style="font-size:0.7rem; font-weight:800; color:#cbd5e1">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}</div><div class="inputs-grid"><div><label class="input-label">Examen</label><input type="text" id="${id}-ex" placeholder="00.00" oninput="handleInput(this)"></div><div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" id="${id}-td" placeholder="00.00" oninput="handleInput(this)"></div><div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" id="${id}-tp" placeholder="00.00" oninput="handleInput(this)"></div></div></div>`;
+            });
+            html += `</div>`;
+        });
+        html += `</div>`;
+        root.innerHTML += html;
+    });
+}
+
+function handleInput(el) {
+    let val = el.value.replace(',', '.').replace(/[^0-9.]/g, '');
+    const parts = val.split('.');
+    if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+    if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
+    el.value = val;
+
+    // Validation stricte des fractions autorisées (.00, .25, .5, .75)
+    if (val.includes('.') && parts[1].length === 2) {
+        const frac = parts[1];
+        const validFracs = ["00", "25", "50", "75"];
+        if (!validFracs.includes(frac)) {
+            el.classList.add('invalid');
+        } else {
+            el.classList.remove('invalid');
+        }
+    } else if (val.includes('.') && parts[1].length === 1) {
+        // En cours de saisie d'un seul chiffre après virgule, on laisse faire mais on marque invalide si différent de 0, 2, 5, 7
+        if (!["0", "2", "5", "7"].includes(parts[1])) el.classList.add('invalid');
+        else el.classList.remove('invalid');
+    } else {
+        el.classList.remove('invalid');
+    }
+
+    const num = parseFloat(val);
+    if (val !== "" && (num < 0 || num > 20)) el.classList.add('invalid');
+    
+    calc();
+}
+
+function toggleTP(id) {
+    const isChecked = document.getElementById(id + '-tp-on').checked;
+    document.getElementById(id + '-tp-box').className = isChecked ? 'tp-visible' : 'tp-hidden';
+    if(!isChecked) document.getElementById(id + '-tp').value = "";
+    calc();
+}
+
+function resetDisplay() {
+    document.querySelectorAll('.stat-value, [id^="ue-moy-"]').forEach(el => el.innerText = "--");
+    document.getElementById('total-moy').innerText = "--";
+    document.getElementById('total-cred').innerText = "--";
+    const v = document.getElementById('verdict');
+    v.innerText = "NOTE INVALIDE";
+    v.style.color = "var(--danger)"; v.style.borderColor = "var(--danger)";
+    document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('moy-green', 'moy-red'));
+}
+
+function formatLMD(val) {
+    return (Math.floor(val * 100) / 100).toFixed(2);
+}
+
+function calc() {
+    let inputs = document.querySelectorAll('input[type="text"]'), hasError = false, hasAnyNote = false;
+    inputs.forEach(i => { if(i.value !== "") hasAnyNote = true; if(i.classList.contains('invalid')) hasError = true; });
+
+    if (hasError || !hasAnyNote) {
+        resetDisplay();
+        if(!hasAnyNote) document.getElementById('verdict').innerText = "EN ATTENTE";
+        return;
+    }
+
+    let sMoy = {s1:0, s2:0}, sCred = {s1:0, s2:0};
+    ['s1', 's2'].forEach(s => {
+        let ptsSem = 0, coefSem = 0, crSem = 0;
+        bulletinStructure[s].forEach((ue, uIdx) => {
+            let ptsUE = 0, coefUE = 0, crUE = 0;
+            let modData = [];
+
+            ue.mods.forEach((m, mIdx) => {
+                const id = `${s}-${uIdx}-${mIdx}`;
+                const ex = parseFloat(document.getElementById(id+'-ex').value) || 0;
+                let mMod = ex;
+                if(m.hasTD) {
+                    const td = parseFloat(document.getElementById(id+'-td').value) || 0;
+                    const tpOn = document.getElementById(id+'-tp-on');
+                    if(tpOn && tpOn.checked) {
+                        const tp = parseFloat(document.getElementById(id+'-tp').value) || 0;
+                        mMod = (ex * 0.6) + (td * 0.2) + (tp * 0.2);
+                    } else { mMod = (ex * 0.6) + (td * 0.4); }
+                }
+                ptsUE += mMod * m.c; 
+                coefUE += m.c;
+                crUE += m.cr;
+                modData.push({moy: mMod, credit: m.cr});
+            });
+
+            let moyUE = ptsUE / (coefUE || 1);
+            document.getElementById(`ue-moy-${s}-${uIdx}`).innerText = formatLMD(moyUE);
+
+            if(moyUE >= 10) crSem += crUE;
+            else modData.forEach(m => { if(m.moy >= 10) crSem += m.credit; });
+            
+            ptsSem += ptsUE; coefSem += coefUE;
+        });
+        sMoy[s] = ptsSem / (coefSem || 1); sCred[s] = crSem;
+        document.getElementById('moy-'+s).innerText = formatLMD(sMoy[s]);
+        document.getElementById('cred-'+s).innerText = crSem + " / 30";
+        document.getElementById('moy-box-'+s).className = "stat-box " + (sMoy[s] >= 10 ? "moy-green" : "moy-red");
+    });
+
+    const mAn = (sMoy.s1 + sMoy.s2) / 2, totalCr = sCred.s1 + sCred.s2;
+    document.getElementById('total-moy').innerText = formatLMD(mAn);
+    document.getElementById('total-cred').innerText = totalCr + " / 60";
+    
+    const v = document.getElementById('verdict');
+    if(mAn >= 10) { v.innerText = "ADMIS"; v.style.color = "var(--success)"; v.style.borderColor = "var(--success)"; }
+    else if(totalCr >= 30) { v.innerText = "DETTES"; v.style.color = "var(--warning)"; v.style.borderColor = "var(--warning)"; }
+    else { v.innerText = "AJOURNÉ"; v.style.color = "var(--danger)"; v.style.borderColor = "var(--danger)"; }
+}
+init();
+</script>
+</body>
+</html>
