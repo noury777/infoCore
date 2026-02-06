@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>InfoCalc | Calc moyenne V1.0</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><defs><linearGradient id=%22g%22 x1=%220%%22 y1=%220%%22 x2=%22100%%22 y2=%22100%%22><stop offset=%220%%22 stop-color=%22%2322d3ee%22/><stop offset=%22100%%22 stop-color=%22%23a855f7%22/></linearGradient></defs><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22url(%23g)%22/><path d=%22M25 45h50M25 60h50%22 stroke=%22white%22 stroke-width=%2210%22 stroke-linecap=%22round%22 opacity=%220.9%22/><path d=%22M20 20l15-5m45 5l-15-5%22 stroke=%22white%22 stroke-width=%224%22 stroke-linecap=%22round%22 opacity=%220.6%22/></svg>">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
@@ -12,9 +12,18 @@
             --success: #00ff9d; --warning: #ffb700; --danger: #ff2d55; --border: rgba(255, 255, 255, 0.1);
         }
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg-deep); color: var(--text); margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden; position: relative; }
+        body { 
+            background: var(--bg-deep); 
+            color: var(--text); 
+            margin: 0; 
+            padding: 10px; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
         
-        /* Masquage de la sélection de texte globale */
         input::selection { background: transparent; color: inherit; }
         input::-moz-selection { background: transparent; color: inherit; }
 
@@ -24,86 +33,109 @@
         .blob-2 { width: 500px; height: 500px; background: var(--accent); bottom: -5%; right: -5%; animation-delay: -5s; }
         @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(80px, 40px) rotate(90deg) scale(1.1); } }
         
-        .container { max-width: 720px; margin: auto; padding-bottom: 160px; position: relative; }
-        header { text-align: center; padding: 40px 0 20px 0; user-select: none; }
+        .container { width: 100%; max-width: 720px; margin: auto; padding-bottom: 180px; position: relative; }
+        header { text-align: center; padding: 30px 0 20px 0; user-select: none; }
         header h1 { 
-            font-size: 3.5rem; margin: 0; font-weight: 900; letter-spacing: -3px; 
+            font-size: clamp(2.5rem, 10vw, 3.5rem); margin: 0; font-weight: 900; letter-spacing: -2px; 
             background: linear-gradient(45deg, #ffffff, var(--accent), var(--primary), #ffffff);
             background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
             animation: fluid-gradient 12s ease infinite;
         }
         @keyframes fluid-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-        header .brand-sub { font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 5px; font-weight: 800; }
+        header .brand-sub { font-size: 0.65rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 3px; font-weight: 800; padding: 0 10px; }
 
-        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); }
-        .sem-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 15px; }
+        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-radius: 24px; padding: clamp(15px, 4vw, 25px); margin-bottom: 25px; border: 1px solid var(--border); }
+        .sem-title { display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 15px; flex-wrap: wrap; gap: 10px; }
         .sem-title h2 { font-weight: 800; font-size: 1.3rem; margin: 0; }
         
-        .stat-box { min-width: 100px; text-align: center; padding: 8px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); transition: all 0.4s ease; }
+        .stat-box { min-width: 80px; text-align: center; padding: 8px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); transition: all 0.4s ease; flex: 1; }
         .stat-label { font-size: 0.5rem; text-transform: uppercase; color: var(--accent); font-weight: 800; }
-        .stat-value { font-size: 1.1rem; font-weight: 800; font-family: 'JetBrains Mono'; transition: color 0.4s ease; }
+        .stat-value { font-size: 1rem; font-weight: 800; font-family: 'JetBrains Mono'; transition: color 0.4s ease; }
 
-        .ue-container { margin-bottom: 20px; border-radius: 18px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); }
+        .ue-container { margin-bottom: 20px; border-radius: 18px; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); }
         .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
-        .mod-row { margin-bottom: 15px; scroll-margin: 140px; }
-        .mod-name { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
+        .mod-row { margin-bottom: 18px; }
+        .mod-name { font-size: 0.85rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; line-height: 1.2; }
         
-        .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         
-        /* Input avec curseur masqué */
         input[type=text] { 
             background: rgba(0, 0, 0, 0.4); 
             border: 1px solid var(--border); 
             border-radius: 12px; 
             color: white; 
-            padding: 10px 5px; 
+            padding: 12px 5px; 
             width: 100%; 
             outline: none; 
             text-align: center; 
             font-size: 1.1rem; 
             font-weight: 700; 
             font-family: 'JetBrains Mono'; 
-            caret-color: transparent; /* Masque le curseur clignotant */
-            transition: 0.3s; 
+            caret-color: var(--accent);
+            transition: 0.3s;
+            /* Empêche le zoom auto sur iOS */
+            font-size: 16px; 
         }
         input:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(34, 211, 238, 0.1); }
-        .input-label { display: block; font-size: 0.55rem; text-align: center; margin-bottom: 4px; opacity: 0.5; font-weight: 800; }
+        .input-label { display: block; font-size: 0.55rem; text-align: center; margin-bottom: 4px; opacity: 0.5; font-weight: 800; text-transform: uppercase; }
 
         .glass-dock {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            width: 92%; max-width: 600px;
-            background: rgba(15, 7, 28, 0.8);
+            position: fixed; bottom: 15px; left: 50%; transform: translateX(-50%);
+            width: 95%; max-width: 600px;
+            background: rgba(15, 7, 28, 0.85);
             backdrop-filter: blur(30px) saturate(180%);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 30px; padding: 15px 20px;
+            border-radius: 25px; padding: 15px;
             z-index: 1000;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.7);
             user-select: none;
         }
-        .dock-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; align-items: center; }
+        .dock-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 8px; align-items: center; }
         .dock-item { text-align: center; }
         .dock-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
-        .dock-val { font-size: 1.4rem; font-weight: 900; font-family: 'JetBrains Mono'; color: #fff; }
+        .dock-val { font-size: 1.2rem; font-weight: 900; font-family: 'JetBrains Mono'; color: #fff; }
         
         .verdict-pill { 
             background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            padding: 10px; border-radius: 20px; font-weight: 900; font-size: 0.75rem; 
+            padding: 10px 5px; border-radius: 15px; font-weight: 900; font-size: 0.7rem; 
             text-transform: uppercase; text-align: center; transition: all 0.4s ease;
         }
 
         .no-display { display: none; }
         .tp-hidden { visibility: hidden; pointer-events: none; opacity: 0; }
-        .tp-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 100px; border: 1px solid var(--border); }
-        .switch { position: relative; width: 30px; height: 16px; }
+        .tp-container { display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 100px; border: 1px solid var(--border); }
+        .switch { position: relative; width: 34px; height: 18px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #31135e; transition: .3s; border-radius: 30px; }
-        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: #6366f1; transition: .3s; border-radius: 50%; }
+        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: #6366f1; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(14px); background-color: white; }
+        input:checked + .slider:before { transform: translateX(16px); background-color: white; }
         
-        .copyright { text-align: center; font-size: 0.6rem; opacity: 0.4; margin-top: 10px; letter-spacing: 1px; }
+        .copyright { text-align: center; font-size: 0.55rem; opacity: 0.4; margin-top: 10px; letter-spacing: 1px; }
 
-        @media (min-width: 600px) { .mod-row { display: flex; align-items: center; gap: 20px; } .mod-meta { width: 40%; margin-bottom: 0; } .inputs-grid { width: 60%; } }
+        /* Tablet & Desktop Optimizations */
+        @media (min-width: 600px) { 
+            .mod-row { display: flex; align-items: center; gap: 20px; } 
+            .mod-meta { width: 40%; margin-bottom: 0 !important; } 
+            .inputs-grid { width: 60%; }
+            .stat-box { min-width: 100px; }
+            .dock-val { font-size: 1.5rem; }
+            header .brand-sub { font-size: 0.75rem; }
+        }
+
+        /* Portrait Mobile Adjustments */
+        @media (max-width: 400px) {
+            .inputs-grid { gap: 6px; }
+            input[type=text] { padding: 10px 2px; font-size: 14px; }
+            .ue-header { font-size: 0.55rem; }
+            .verdict-pill { font-size: 0.6rem; }
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .glass-dock { bottom: calc(15px + env(safe-area-inset-bottom)); }
+            body { padding-bottom: env(safe-area-inset-bottom); }
+        }
     </style>
 </head>
 <body>
@@ -129,6 +161,7 @@
 </div>
 
 <script>
+// Le JavaScript reste identique pour conserver la logique parfaite du calcul
 const bulletinStructure = {
     s1: [
         { name: "UEF 1 (Mathématiques 1)", mods: [{n: "Analyse 1", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 1", c: 2, cr: 4, hasTD:true}]},
@@ -154,9 +187,9 @@ function init() {
             ue.mods.forEach((m, mIdx) => {
                 const id = `${s}-${uIdx}-${mIdx}`;
                 html += `<div class="mod-row"><div class="mod-meta" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="mod-name" style="margin:0">${m.n}</div>${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}</div><div class="inputs-grid">
-                <div><label class="input-label">Examen</label><input type="text" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div><label class="input-label">Examen</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
                 </div></div>`;
             });
             html += `</div>`;
