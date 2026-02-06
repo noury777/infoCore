@@ -46,15 +46,17 @@
         .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
         .mod-row { margin-bottom: 15px; scroll-margin: 140px; }
         
-        /* Style des infos coeff/crédit */
-        .mod-tag { font-size: 0.55rem; font-weight: 900; color: var(--accent); opacity: 0.6; letter-spacing: 1px; margin-bottom: 2px; text-transform: uppercase; }
+        /* Style Coeff / Crédit */
+        .mod-info { font-size: 0.6rem; font-weight: 900; color: var(--accent); opacity: 0.6; text-transform: uppercase; margin-bottom: 2px; }
         .mod-name { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
         
         .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        
         input[type=text] { 
             background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; 
             color: white; padding: 10px 5px; width: 100%; outline: none; text-align: center; 
-            font-size: 1.1rem; font-weight: 700; font-family: 'JetBrains Mono'; caret-color: transparent; transition: 0.3s; 
+            font-size: 16px; /* Multiplateforme : Empêche le zoom auto iOS */
+            font-weight: 700; font-family: 'JetBrains Mono'; caret-color: transparent; transition: 0.3s; 
         }
         input:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(34, 211, 238, 0.1); }
         .input-label { display: block; font-size: 0.55rem; text-align: center; margin-bottom: 4px; opacity: 0.5; font-weight: 800; }
@@ -66,8 +68,10 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.6); user-select: none;
         }
         .dock-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; align-items: center; }
-        .dock-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; text-align: center; }
-        .dock-val { font-size: 1.4rem; font-weight: 900; font-family: 'JetBrains Mono'; color: #fff; text-align: center; }
+        .dock-item { text-align: center; }
+        .dock-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .dock-val { font-size: 1.4rem; font-weight: 900; font-family: 'JetBrains Mono'; color: #fff; }
+        
         .verdict-pill { background: rgba(255,255,255,0.05); border: 1px solid var(--border); padding: 10px; border-radius: 20px; font-weight: 900; font-size: 0.75rem; text-transform: uppercase; text-align: center; transition: all 0.4s ease; }
 
         .no-display { display: none; }
@@ -121,25 +125,16 @@ const bulletinStructure = {
 function init() {
     const root = document.getElementById('calculator-app');
     ['s1', 's2'].forEach(s => {
-        let html = `<div class="card"><div class="sem-title"><h2>Semestre ${s=='s1'?'1':'2'}</h2><div class="stats-group" style="display:flex; gap:10px;"><div class="stat-box" id="cred-box-${s}"><div class="stat-label">Crédits</div><div class="stat-value" id="cred-${s}">--</div></div><div class="stat-box" id="moy-box-${s}"><div class="stat-label" id="moy-label-${s}">Moyenne</div><div class="stat-value" id="moy-${s}">--</div></div></div></div>`;
+        let html = `<div class="card"><div class="sem-title"><h2>Semestre ${s=='s1'?'1':'2'}</h2><div class="stats-group" style="display:flex; gap:10px;"><div class="stat-box" id="cred-box-${s}"><div class="stat-label">Crédits</div><div class="stat-value" id="cred-${s}">--</div></div><div class="stat-box" id="moy-box-${s}"><div class="stat-label">Moyenne</div><div class="stat-value" id="moy-${s}">--</div></div></div></div>`;
         bulletinStructure[s].forEach((ue, uIdx) => {
             html += `<div class="ue-container"><div class="ue-header"><span>${ue.name}</span><span id="ue-moy-${s}-${uIdx}">--</span></div>`;
             ue.mods.forEach((m, mIdx) => {
                 const id = `${s}-${uIdx}-${mIdx}`;
-                html += `<div class="mod-row">
-                    <div class="mod-meta">
-                        <div class="mod-tag">Coef: ${m.c} • Créd: ${m.cr}</div>
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <div class="mod-name" style="margin:0">${m.n}</div>
-                            ${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}
-                        </div>
-                    </div>
-                    <div class="inputs-grid">
-                        <div><label class="input-label">Examen</label><input type="text" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                        <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                        <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                    </div>
-                </div>`;
+                html += `<div class="mod-row"><div class="mod-meta" style="margin-bottom:8px;"><div class="mod-info">COEF: ${m.c} | CRED: ${m.cr}</div><div style="display:flex; justify-content:space-between; align-items:center;"><div class="mod-name" style="margin:0">${m.n}</div>${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}</div></div><div class="inputs-grid">
+                <div><label class="input-label">Examen</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" inputmode="decimal" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                </div></div>`;
             });
             html += `</div>`;
         });
@@ -149,6 +144,7 @@ function init() {
     enableArrowNavigation();
 }
 
+// ... (Reste des fonctions handleInput, calc, etc. identiques à ton code original)
 function enableArrowNavigation() {
     const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
     allInputs.forEach((input, index) => {
