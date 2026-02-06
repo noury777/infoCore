@@ -3,139 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>InfoCore | Calc Votre Moyenne</title>
+    <title>InfoCalc | Calc moyenne V1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=JetBrains+Mono:wght@700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a; --card: #1e293b; --text: #f8fafc;
-            --primary: #3b82f6; --success: #22c55e; --warning: #f59e0b; --danger: #ef4444;
-            --border: rgba(255,255,255,0.1);
-            --tp-bg: #334155;
+            --bg-deep: #0f081d; --text: #f8fafc; --primary: #a855f7; --accent: #22d3ee; 
+            --success: #00ff9d; --warning: #ffb700; --danger: #ff2d55; --border: rgba(255, 255, 255, 0.1);
         }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', Roboto, Helvetica, sans-serif; margin: 0; padding: 10px; }
-        .container { max-width: 720px; margin: auto; padding-bottom: 180px; }
-
-        header { text-align: center; padding: 35px 0; border-bottom: 1px solid var(--border); margin-bottom: 25px; }
-        header h1 { font-size: 2.5rem; margin: 0; color: var(--primary); letter-spacing: -1.5px; font-weight: 900; }
-        header .brand-sub { font-size: 0.75rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 3px; margin-top: 5px; font-weight: bold; }
-
-        .card { background: var(--card); border-radius: 24px; padding: 20px; margin-bottom: 30px; border: 1px solid var(--border); box-shadow: 0 15px 35px rgba(0,0,0,0.4); }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg-deep); color: var(--text); margin: 0; padding: 10px; min-height: 100vh; overflow-x: hidden; position: relative; }
         
-        .sem-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-left: 6px solid var(--primary); padding-left: 15px; flex-wrap: wrap; gap: 15px; }
-        .stats-group { display: flex; gap: 12px; align-items: center; }
+        /* Masquage de la sélection de texte globale */
+        input::selection { background: transparent; color: inherit; }
+        input::-moz-selection { background: transparent; color: inherit; }
+
+        .bg-wrapper { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: #0f081d; overflow: hidden; }
+        .cyber-blob { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.35; animation: float 25s infinite alternate ease-in-out; }
+        .blob-1 { width: 600px; height: 600px; background: var(--primary); top: -10%; left: -10%; }
+        .blob-2 { width: 500px; height: 500px; background: var(--accent); bottom: -5%; right: -5%; animation-delay: -5s; }
+        @keyframes float { 0% { transform: translate(0, 0) rotate(0deg) scale(1); } 100% { transform: translate(80px, 40px) rotate(90deg) scale(1.1); } }
         
-        .stat-box { 
-            min-width: 130px; height: 50px; display: flex; flex-direction: column; 
-            justify-content: center; align-items: center; border-radius: 12px; 
-            font-weight: 800; border: 1px solid var(--border); transition: all 0.4s ease;
-            background: rgba(255,255,255,0.05);
+        .container { max-width: 720px; margin: auto; padding-bottom: 160px; position: relative; }
+        header { text-align: center; padding: 40px 0 20px 0; user-select: none; }
+        header h1 { 
+            font-size: 3.5rem; margin: 0; font-weight: 900; letter-spacing: -3px; 
+            background: linear-gradient(45deg, #ffffff, var(--accent), var(--primary), #ffffff);
+            background-size: 400% 400%; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: fluid-gradient 12s ease infinite;
         }
-        .stat-label { font-size: 0.55rem; text-transform: uppercase; opacity: 0.6; margin-bottom: 2px; }
-        .stat-value { font-size: 1.1rem; }
+        @keyframes fluid-gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        header .brand-sub { font-size: 0.7rem; opacity: 0.6; text-transform: uppercase; letter-spacing: 5px; font-weight: 800; }
 
-        .moy-red { color: var(--danger) !important; background: rgba(239, 68, 68, 0.1) !important; border-color: rgba(239, 68, 68, 0.2) !important; }
-        .moy-green { color: var(--success) !important; background: rgba(34, 197, 94, 0.1) !important; border-color: rgba(34, 197, 94, 0.2) !important; }
-
-        .ue-container { margin-bottom: 25px; border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; padding: 18px; background: rgba(255,255,255,0.02); }
-        .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.75rem; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
-
-        .mod-row { margin-bottom: 18px; padding-bottom: 15px; border-bottom: 1px dashed rgba(255,255,255,0.05); }
-        .mod-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .mod-name { font-size: 0.95rem; font-weight: 600; flex: 1; color: #e2e8f0; }
+        .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); }
+        .sem-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 15px; }
+        .sem-title h2 { font-weight: 800; font-size: 1.3rem; margin: 0; }
         
-        .tp-container {
-            display: flex; align-items: center; gap: 10px; background: var(--tp-bg);
-            padding: 5px 10px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .switch { position: relative; display: inline-block; width: 34px; height: 18px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #1e293b; transition: .3s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 12px; width: 12px; left: 3px; bottom: 3px; background-color: #94a3b8; transition: .3s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(16px); background-color: white; }
+        .stat-box { min-width: 100px; text-align: center; padding: 8px; border-radius: 12px; background: rgba(0,0,0,0.3); border: 1px solid var(--border); transition: all 0.4s ease; }
+        .stat-label { font-size: 0.5rem; text-transform: uppercase; color: var(--accent); font-weight: 800; }
+        .stat-value { font-size: 1.1rem; font-weight: 800; font-family: 'JetBrains Mono'; transition: color 0.4s ease; }
 
-        .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+        .ue-container { margin-bottom: 20px; border-radius: 18px; padding: 15px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); }
+        .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
+        .mod-row { margin-bottom: 15px; scroll-margin: 140px; }
+        .mod-name { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
+        
+        .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        
+        /* Input avec curseur masqué */
         input[type=text] { 
-            background: #334155; border: 2px solid #475569; border-radius: 10px;
-            color: white; padding: 12px 5px; width: 100%; outline: none; font-size: 1.1rem; text-align: center; transition: 0.3s;
+            background: rgba(0, 0, 0, 0.4); 
+            border: 1px solid var(--border); 
+            border-radius: 12px; 
+            color: white; 
+            padding: 10px 5px; 
+            width: 100%; 
+            outline: none; 
+            text-align: center; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            font-family: 'JetBrains Mono'; 
+            caret-color: transparent; /* Masque le curseur clignotant */
+            transition: 0.3s; 
         }
-        input:focus { border-color: var(--primary); background: #3d4b5f; }
-        input.invalid { border-color: var(--danger) !important; background: rgba(239, 68, 68, 0.15) !important; color: var(--danger) !important; }
+        input:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(34, 211, 238, 0.1); }
+        .input-label { display: block; font-size: 0.55rem; text-align: center; margin-bottom: 4px; opacity: 0.5; font-weight: 800; }
 
-        .input-label { display: block; font-size: 0.65rem; text-align: center; margin-bottom: 6px; opacity: 0.5; font-weight: bold; }
+        .glass-dock {
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 600px;
+            background: rgba(15, 7, 28, 0.8);
+            backdrop-filter: blur(30px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 30px; padding: 15px 20px;
+            z-index: 1000;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            user-select: none;
+        }
+        .dock-grid { display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 10px; align-items: center; }
+        .dock-item { text-align: center; }
+        .dock-label { font-size: 0.5rem; font-weight: 900; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px; }
+        .dock-val { font-size: 1.4rem; font-weight: 900; font-family: 'JetBrains Mono'; color: #fff; }
+        
+        .verdict-pill { 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            padding: 10px; border-radius: 20px; font-weight: 900; font-size: 0.75rem; 
+            text-transform: uppercase; text-align: center; transition: all 0.4s ease;
+        }
+
         .no-display { display: none; }
         .tp-hidden { visibility: hidden; pointer-events: none; opacity: 0; }
-
-        .footer-bilan {
-            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(15, 23, 42, 0.98);
-            backdrop-filter: blur(20px); border-top: 4px solid var(--primary); padding: 15px 20px 12px 20px;
-            z-index: 1000; box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
-        }
-        .bilan-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; align-items: center; text-align: center; margin-bottom: 12px; }
-        .f-val { font-size: 1.5rem; font-weight: 900; display: block; }
-        .verdict-chip { border: 2px solid; padding: 8px; border-radius: 12px; font-weight: 900; font-size: 0.75rem; transition: 0.3s; }
+        .tp-container { display: flex; align-items: center; gap: 8px; background: rgba(0,0,0,0.3); padding: 4px 10px; border-radius: 100px; border: 1px solid var(--border); }
+        .switch { position: relative; width: 30px; height: 16px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #31135e; transition: .3s; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 10px; width: 10px; left: 3px; bottom: 3px; background-color: #6366f1; transition: .3s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(14px); background-color: white; }
         
-        .copyright { text-align: center; font-size: 0.7rem; opacity: 0.5; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 10px; }
+        .copyright { text-align: center; font-size: 0.6rem; opacity: 0.4; margin-top: 10px; letter-spacing: 1px; }
 
-        @media (min-width: 600px) {
-            .mod-row { display: flex; align-items: center; gap: 30px; }
-            .mod-meta { margin-bottom: 0; width: 45%; }
-            .inputs-grid { width: 55%; }
-        }
+        @media (min-width: 600px) { .mod-row { display: flex; align-items: center; gap: 20px; } .mod-meta { width: 40%; margin-bottom: 0; } .inputs-grid { width: 60%; } }
     </style>
 </head>
 <body>
-
+<div class="bg-wrapper"><div class="cyber-blob blob-1"></div><div class="cyber-blob blob-2"></div></div>
 <div class="container">
-    <header>
-        <h1>InfoCore</h1>
-        <div class="brand-sub">Scientific Grading System</div>
-    </header>
-
+    <header><h1>InfoCalc</h1><div class="brand-sub">Calculateur de moyenne pour les L1 informatique</div></header>
     <div id="calculator-app"></div>
 
-    <div class="footer-bilan">
-        <div class="bilan-grid">
-            <div><span style="font-size:0.6rem; opacity:0.6; font-weight:bold;">MOY. ANNUELLE</span><span class="f-val" id="total-moy">--</span></div>
-            <div><span style="font-size:0.6rem; opacity:0.6; font-weight:bold;">TOTAL CRÉDITS</span><span class="f-val" id="total-cred" style="color:var(--warning)">--</span></div>
-            <div id="verdict" class="verdict-chip">EN ATTENTE</div>
+    <div class="glass-dock">
+        <div class="dock-grid">
+            <div class="dock-item">
+                <div class="dock-label">Moyenne</div>
+                <div class="dock-val" id="total-moy">--</div>
+            </div>
+            <div class="dock-item">
+                <div class="dock-label">Crédits</div>
+                <div class="dock-val" id="total-cred" style="color:var(--warning)">--</div>
+            </div>
+            <div id="verdict" class="verdict-pill">En attente</div>
         </div>
-        <div class="copyright">&copy; 2024-2026 Developed by <strong>Noureddine</strong></div>
+        <div class="copyright">© 2026 Developed by Noureddine</div>
     </div>
 </div>
 
 <script>
 const bulletinStructure = {
     s1: [
-        { name: "UEF 1 (Fondamentale Mathématiques)", mods: [{n: "Analyse Mathématique 1", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 1", c: 2, cr: 4, hasTD:true}]},
-        { name: "UEF 2 (Fondamentale Informatique)", mods: [{n: "Algorithmique et ASD 1", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 1", c: 3, cr: 5, hasTD:true}]},
+        { name: "UEF 1 (Mathématiques 1)", mods: [{n: "Analyse 1", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 1", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEF 2 (Informatique 1)", mods: [{n: "Algorithmique 1", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 1", c: 3, cr: 5, hasTD:true}]},
         { name: "UED (Découverte)", mods: [{n: "Électricité Générale", c: 2, cr: 4, hasTD:true}]},
         { name: "UEM (Méthodologique)", mods: [{n: "Logiciel Libre", c: 1, cr: 2, hasTD:false}]},
         { name: "UET (Transversale)", mods: [{n: "Langue Étrangère", c: 1, cr: 2, hasTD:false}]}
     ],
     s2: [
-        { name: "UEF 1 (Fondamentale Mathématiques)", mods: [{n: "Analyse Mathématique 2", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 2", c: 2, cr: 4, hasTD:true}]},
-        { name: "UEF 2 (Fondamentale Informatique)", mods: [{n: "Algorithmique et ASD 2", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 2", c: 3, cr: 5, hasTD:true}]},
-        { name: "UED (Découverte)", mods: [{n: "Électronique Fondamentale", c: 2, cr: 4, hasTD:true}]},
-        { name: "UEM (Méthodologique)", mods: [{n: "Logique Mathématique", c: 2, cr: 4, hasTD:true}, {n: "Introduction à l'IA", c: 1, cr: 2, hasTD:true}]}
+        { name: "UEF 1 (Mathématiques 2)", mods: [{n: "Analyse 2", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 2", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEF 2 (Informatique 2)", mods: [{n: "Algorithmique 2", c: 5, cr: 7, hasTD:true, hasTP:true}, {n: "Structure Machine 2", c: 3, cr: 5, hasTD:true}]},
+        { name: "UED (Découverte)", mods: [{n: "Électronique Fond.", c: 2, cr: 4, hasTD:true}]},
+        { name: "UEM (Méthodologique)", mods: [{n: "Logique Math.", c: 2, cr: 4, hasTD:true}, {n: "Introduction à l'IA", c: 1, cr: 2, hasTD:true}]}
     ]
 };
 
 function init() {
     const root = document.getElementById('calculator-app');
     ['s1', 's2'].forEach(s => {
-        let html = `<div class="card"><div class="sem-title"><h2>Semestre ${s=='s1'?'1':'2'}</h2><div class="stats-group"><div class="stat-box"><span class="stat-label">Crédits</span><span class="stat-value" id="cred-${s}">--</span></div><div class="stat-box" id="moy-box-${s}"><span class="stat-label">Moyenne</span><span class="stat-value" id="moy-${s}">--</span></div></div></div>`;
+        let html = `<div class="card"><div class="sem-title"><h2>Semestre ${s=='s1'?'1':'2'}</h2><div class="stats-group" style="display:flex; gap:10px;"><div class="stat-box" id="cred-box-${s}"><div class="stat-label">Crédits</div><div class="stat-value" id="cred-${s}">--</div></div><div class="stat-box" id="moy-box-${s}"><div class="stat-label" id="moy-label-${s}">Moyenne</div><div class="stat-value" id="moy-${s}">--</div></div></div></div>`;
         bulletinStructure[s].forEach((ue, uIdx) => {
             html += `<div class="ue-container"><div class="ue-header"><span>${ue.name}</span><span id="ue-moy-${s}-${uIdx}">--</span></div>`;
             ue.mods.forEach((m, mIdx) => {
                 const id = `${s}-${uIdx}-${mIdx}`;
-                html += `<div class="mod-row"><div class="mod-meta"><div class="mod-name">${m.n}</div>${m.hasTP ? `<div class="tp-container"><span style="font-size:0.7rem; font-weight:800; color:#cbd5e1">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}</div><div class="inputs-grid"><div><label class="input-label">Examen</label><input type="text" id="${id}-ex" placeholder="00.00" oninput="handleInput(this)"></div><div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" id="${id}-td" placeholder="00.00" oninput="handleInput(this)"></div><div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" id="${id}-tp" placeholder="00.00" oninput="handleInput(this)"></div></div></div>`;
+                html += `<div class="mod-row"><div class="mod-meta" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"><div class="mod-name" style="margin:0">${m.n}</div>${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}</div><div class="inputs-grid">
+                <div><label class="input-label">Examen</label><input type="text" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                </div></div>`;
             });
             html += `</div>`;
         });
         html += `</div>`;
         root.innerHTML += html;
+    });
+    enableArrowNavigation();
+}
+
+function enableArrowNavigation() {
+    const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
+    allInputs.forEach((input, index) => {
+        input.addEventListener('keydown', (e) => {
+            const type = input.getAttribute('data-type');
+            let nextInput;
+            if (e.key === 'ArrowRight') nextInput = allInputs[index + 1];
+            else if (e.key === 'ArrowLeft') nextInput = allInputs[index - 1];
+            else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+                e.preventDefault();
+                const step = e.key === 'ArrowDown' ? 1 : -1;
+                const rows = Array.from(document.querySelectorAll('.mod-row'));
+                const currentRow = input.closest('.mod-row');
+                const targetRowIndex = rows.indexOf(currentRow) + step;
+                if (targetRowIndex >= 0 && targetRowIndex < rows.length) {
+                    const targetRow = rows[targetRowIndex];
+                    nextInput = targetRow.querySelector(`input[data-type="${type}"]`);
+                    if (!nextInput || nextInput.parentElement.classList.contains('no-display') || nextInput.parentElement.classList.contains('tp-hidden')) {
+                        nextInput = targetRow.querySelector('input[data-type="ex"]');
+                    }
+                }
+            }
+            if (nextInput && !nextInput.parentElement.classList.contains('no-display') && !nextInput.parentElement.classList.contains('tp-hidden')) {
+                nextInput.focus();
+                setTimeout(() => nextInput.select(), 0);
+                nextInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        });
     });
 }
 
@@ -145,28 +203,13 @@ function handleInput(el) {
     if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
     if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
     el.value = val;
-
-    // Validation stricte des fractions autorisées (.00, .25, .5, .75)
-    if (val.includes('.') && parts[1].length === 2) {
-        const frac = parts[1];
-        const validFracs = ["00", "25", "50", "75"];
-        if (!validFracs.includes(frac)) {
-            el.classList.add('invalid');
-        } else {
-            el.classList.remove('invalid');
-        }
-    } else if (val.includes('.') && parts[1].length === 1) {
-        // En cours de saisie d'un seul chiffre après virgule, on laisse faire mais on marque invalide si différent de 0, 2, 5, 7
-        if (!["0", "2", "5", "7"].includes(parts[1])) el.classList.add('invalid');
-        else el.classList.remove('invalid');
-    } else {
-        el.classList.remove('invalid');
-    }
-
-    const num = parseFloat(val);
-    if (val !== "" && (num < 0 || num > 20)) el.classList.add('invalid');
-    
+    if (parseFloat(val) > 20) el.value = "";
     calc();
+}
+
+function validateOnLeave(el) {
+    const num = parseFloat(el.value);
+    if (el.value !== "" && (num < 0 || num > 20 || isNaN(num))) { el.value = ""; calc(); }
 }
 
 function toggleTP(id) {
@@ -176,37 +219,35 @@ function toggleTP(id) {
     calc();
 }
 
-function resetDisplay() {
-    document.querySelectorAll('.stat-value, [id^="ue-moy-"]').forEach(el => el.innerText = "--");
-    document.getElementById('total-moy').innerText = "--";
-    document.getElementById('total-cred').innerText = "--";
-    const v = document.getElementById('verdict');
-    v.innerText = "NOTE INVALIDE";
-    v.style.color = "var(--danger)"; v.style.borderColor = "var(--danger)";
-    document.querySelectorAll('.stat-box').forEach(b => b.classList.remove('moy-green', 'moy-red'));
-}
+function formatLMD(val) { return (Math.round((val + Number.EPSILON) * 100) / 100).toFixed(2); }
 
-function formatLMD(val) {
-    return (Math.floor(val * 100) / 100).toFixed(2);
+function resetDisplays() {
+    document.querySelectorAll('[id^="ue-moy-"], .stat-value, .dock-val').forEach(el => el.innerText = "--");
+    ['s1', 's2'].forEach(s => {
+        const box = document.getElementById(`moy-box-${s}`);
+        box.style.background = "rgba(0,0,0,0.3)";
+        box.style.borderColor = "var(--border)";
+        box.style.boxShadow = "none";
+        document.getElementById(`moy-${s}`).style.color = "var(--text)";
+    });
+    const v = document.getElementById('verdict');
+    v.innerText = "En attente";
+    v.style.color = "var(--text)";
+    v.style.borderColor = "var(--border)";
+    v.style.boxShadow = "none";
+    v.style.background = "rgba(255,255,255,0.05)";
 }
 
 function calc() {
-    let inputs = document.querySelectorAll('input[type="text"]'), hasError = false, hasAnyNote = false;
-    inputs.forEach(i => { if(i.value !== "") hasAnyNote = true; if(i.classList.contains('invalid')) hasError = true; });
-
-    if (hasError || !hasAnyNote) {
-        resetDisplay();
-        if(!hasAnyNote) document.getElementById('verdict').innerText = "EN ATTENTE";
-        return;
-    }
-
+    let hasAnyNote = false;
+    document.querySelectorAll('input[type="text"]').forEach(i => { if(i.value !== "") hasAnyNote = true; });
+    if (!hasAnyNote) { resetDisplays(); return; }
+    
     let sMoy = {s1:0, s2:0}, sCred = {s1:0, s2:0};
     ['s1', 's2'].forEach(s => {
         let ptsSem = 0, coefSem = 0, crSem = 0;
         bulletinStructure[s].forEach((ue, uIdx) => {
-            let ptsUE = 0, coefUE = 0, crUE = 0;
-            let modData = [];
-
+            let ptsUE = 0, coefUE = 0, crUE = 0, modData = [];
             ue.mods.forEach((m, mIdx) => {
                 const id = `${s}-${uIdx}-${mIdx}`;
                 const ex = parseFloat(document.getElementById(id+'-ex').value) || 0;
@@ -219,34 +260,63 @@ function calc() {
                         mMod = (ex * 0.6) + (td * 0.2) + (tp * 0.2);
                     } else { mMod = (ex * 0.6) + (td * 0.4); }
                 }
-                ptsUE += mMod * m.c; 
-                coefUE += m.c;
-                crUE += m.cr;
+                ptsUE += mMod * m.c; coefUE += m.c; crUE += m.cr;
                 modData.push({moy: mMod, credit: m.cr});
             });
-
             let moyUE = ptsUE / (coefUE || 1);
             document.getElementById(`ue-moy-${s}-${uIdx}`).innerText = formatLMD(moyUE);
-
-            if(moyUE >= 10) crSem += crUE;
-            else modData.forEach(m => { if(m.moy >= 10) crSem += m.credit; });
-            
+            if(parseFloat(formatLMD(moyUE)) >= 10) crSem += crUE; 
+            else modData.forEach(m => { if(parseFloat(formatLMD(m.moy)) >= 10) crSem += m.credit; });
             ptsSem += ptsUE; coefSem += coefUE;
         });
         sMoy[s] = ptsSem / (coefSem || 1); sCred[s] = crSem;
-        document.getElementById('moy-'+s).innerText = formatLMD(sMoy[s]);
-        document.getElementById('cred-'+s).innerText = crSem + " / 30";
-        document.getElementById('moy-box-'+s).className = "stat-box " + (sMoy[s] >= 10 ? "moy-green" : "moy-red");
+        const moyVal = parseFloat(formatLMD(sMoy[s]));
+        const moyText = document.getElementById('moy-'+s);
+        moyText.innerText = formatLMD(sMoy[s]);
+        document.getElementById('cred-'+s).innerText = crSem;
+        
+        const box = document.getElementById(`moy-box-${s}`);
+        if (coefSem > 0) {
+            if (moyVal >= 10) {
+                box.style.borderColor = "var(--success)";
+                box.style.background = "rgba(0, 255, 157, 0.08)";
+                box.style.boxShadow = "0 0 12px rgba(0, 255, 157, 0.25)";
+                moyText.style.color = "var(--success)";
+            } else {
+                box.style.borderColor = "var(--danger)";
+                box.style.background = "rgba(255, 45, 85, 0.08)";
+                box.style.boxShadow = "0 0 12px rgba(255, 45, 85, 0.25)";
+                moyText.style.color = "var(--danger)";
+            }
+        }
     });
-
+    
     const mAn = (sMoy.s1 + sMoy.s2) / 2, totalCr = sCred.s1 + sCred.s2;
     document.getElementById('total-moy').innerText = formatLMD(mAn);
-    document.getElementById('total-cred').innerText = totalCr + " / 60";
+    document.getElementById('total-cred').innerText = totalCr;
     
     const v = document.getElementById('verdict');
-    if(mAn >= 10) { v.innerText = "ADMIS"; v.style.color = "var(--success)"; v.style.borderColor = "var(--success)"; }
-    else if(totalCr >= 30) { v.innerText = "DETTES"; v.style.color = "var(--warning)"; v.style.borderColor = "var(--warning)"; }
-    else { v.innerText = "AJOURNÉ"; v.style.color = "var(--danger)"; v.style.borderColor = "var(--danger)"; }
+    if(mAn >= 10) { 
+        v.innerText = "ADMIS"; 
+        v.style.color = "var(--success)";
+        v.style.borderColor = "var(--success)";
+        v.style.background = "rgba(0, 255, 157, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(0, 255, 157, 0.3)";
+    }
+    else if(totalCr >= 30) { 
+        v.innerText = "DETTES"; 
+        v.style.color = "var(--warning)";
+        v.style.borderColor = "var(--warning)";
+        v.style.background = "rgba(255, 183, 0, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(255, 183, 0, 0.3)";
+    }
+    else { 
+        v.innerText = "AJOURNÉ"; 
+        v.style.color = "var(--danger)";
+        v.style.borderColor = "var(--danger)";
+        v.style.background = "rgba(255, 45, 85, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(255, 45, 85, 0.3)";
+    }
 }
 init();
 </script>
