@@ -46,8 +46,8 @@
         .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
         .mod-row { margin-bottom: 15px; scroll-margin: 140px; }
         
-        /* Style amélioré pour Coeff & Crédits */
-        .mod-info-tag { font-size: 0.55rem; font-weight: 900; color: var(--accent); opacity: 0.7; letter-spacing: 0.5px; margin-bottom: 2px; }
+        /* Style des infos coeff/crédit */
+        .mod-tag { font-size: 0.55rem; font-weight: 900; color: var(--accent); opacity: 0.6; letter-spacing: 1px; margin-bottom: 2px; text-transform: uppercase; }
         .mod-name { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
         
         .inputs-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -126,17 +126,20 @@ function init() {
             html += `<div class="ue-container"><div class="ue-header"><span>${ue.name}</span><span id="ue-moy-${s}-${uIdx}">--</span></div>`;
             ue.mods.forEach((m, mIdx) => {
                 const id = `${s}-${uIdx}-${mIdx}`;
-                html += `<div class="mod-row"><div class="mod-meta">
-                    <div class="mod-info-tag">COEF: ${m.c} • CRÉDITS: ${m.cr}</div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <div class="mod-name" style="margin:0">${m.n}</div>
-                        ${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}
+                html += `<div class="mod-row">
+                    <div class="mod-meta">
+                        <div class="mod-tag">Coef: ${m.c} • Créd: ${m.cr}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <div class="mod-name" style="margin:0">${m.n}</div>
+                            ${m.hasTP ? `<div class="tp-container"><span style="font-size:0.6rem; font-weight:800;">TP</span><label class="switch"><input type="checkbox" id="${id}-tp-on" onchange="toggleTP('${id}')"><span class="slider"></span></label></div>` : ''}
+                        </div>
                     </div>
-                </div><div class="inputs-grid">
-                <div><label class="input-label">Examen</label><input type="text" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
-                </div></div>`;
+                    <div class="inputs-grid">
+                        <div><label class="input-label">Examen</label><input type="text" autocomplete="off" id="${id}-ex" data-type="ex" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                        <div class="${m.hasTD?'':'no-display'}"><label class="input-label">TD</label><input type="text" autocomplete="off" id="${id}-td" data-type="td" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                        <div id="${id}-tp-box" class="${m.hasTP?'tp-hidden':'no-display'}"><label class="input-label">TP</label><input type="text" autocomplete="off" id="${id}-tp" data-type="tp" placeholder="0.00" oninput="handleInput(this)" onblur="validateOnLeave(this)" onfocus="this.select()"></div>
+                    </div>
+                </div>`;
             });
             html += `</div>`;
         });
@@ -277,16 +280,25 @@ function calc() {
     
     const v = document.getElementById('verdict');
     if(mAn >= 10) { 
-        v.innerText = "ADMIS"; v.style.color = "var(--success)"; v.style.borderColor = "var(--success)";
-        v.style.background = "rgba(0, 255, 157, 0.1)"; v.style.boxShadow = "0 0 15px rgba(0, 255, 157, 0.3)";
+        v.innerText = "ADMIS"; 
+        v.style.color = "var(--success)";
+        v.style.borderColor = "var(--success)";
+        v.style.background = "rgba(0, 255, 157, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(0, 255, 157, 0.3)";
     }
     else if(totalCr >= 30) { 
-        v.innerText = "DETTES"; v.style.color = "var(--warning)"; v.style.borderColor = "var(--warning)";
-        v.style.background = "rgba(255, 183, 0, 0.1)"; v.style.boxShadow = "0 0 15px rgba(255, 183, 0, 0.3)";
+        v.innerText = "DETTES"; 
+        v.style.color = "var(--warning)";
+        v.style.borderColor = "var(--warning)";
+        v.style.background = "rgba(255, 183, 0, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(255, 183, 0, 0.3)";
     }
     else { 
-        v.innerText = "AJOURNÉ"; v.style.color = "var(--danger)"; v.style.borderColor = "var(--danger)";
-        v.style.background = "rgba(255, 45, 85, 0.1)"; v.style.boxShadow = "0 0 15px rgba(255, 45, 85, 0.3)";
+        v.innerText = "AJOURNÉ"; 
+        v.style.color = "var(--danger)";
+        v.style.borderColor = "var(--danger)";
+        v.style.background = "rgba(255, 45, 85, 0.1)";
+        v.style.boxShadow = "0 0 15px rgba(255, 45, 85, 0.3)";
     }
 }
 init();
