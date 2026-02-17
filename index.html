@@ -36,7 +36,6 @@
 
         .card { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(20px); border-radius: 24px; padding: 20px; margin-bottom: 25px; border: 1px solid var(--border); }
         
-        /* FIX MULTIPLATEFORME SANS TOUCHER AU DESIGN */
         .sem-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-left: 4px solid var(--accent); padding-left: 15px; flex-wrap: wrap; gap: 10px; }
         .sem-title h2 { font-weight: 800; font-size: 1.3rem; margin: 0; }
         .stats-group { display: flex; gap: 10px; flex-wrap: nowrap; }
@@ -49,7 +48,6 @@
         .ue-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 0.65rem; color: var(--accent); text-transform: uppercase; margin-bottom: 12px; border-bottom: 1px solid var(--border); padding-bottom: 5px; }
         .mod-row { margin-bottom: 15px; scroll-margin: 140px; }
         
-        /* Badges Infos */
         .mod-meta { margin-bottom: 8px; }
         .mod-info { font-size: 0.55rem; font-weight: 900; color: var(--accent); opacity: 0.6; margin-bottom: 2px; text-transform: uppercase; }
         .mod-name { font-size: 0.9rem; font-weight: 600; color: #cbd5e1; margin-bottom: 10px; }
@@ -59,8 +57,7 @@
         input[type=text] { 
             background: rgba(0, 0, 0, 0.4); border: 1px solid var(--border); border-radius: 12px; 
             color: white; padding: 10px 5px; width: 100%; outline: none; text-align: center; 
-            font-size: 16px; /* Empêche zoom auto iOS */
-            font-weight: 700; font-family: 'JetBrains Mono'; caret-color: transparent; transition: 0.3s; 
+            font-size: 16px; font-weight: 700; font-family: 'JetBrains Mono'; caret-color: transparent; transition: 0.3s; 
         }
         input:focus { border-color: var(--accent); background: rgba(0,0,0,0.6); box-shadow: 0 0 15px rgba(34, 211, 238, 0.1); }
         .input-label { display: block; font-size: 0.55rem; text-align: center; margin-bottom: 4px; opacity: 0.5; font-weight: 800; }
@@ -90,7 +87,6 @@
         
         .copyright { text-align: center; font-size: 0.6rem; opacity: 0.4; margin-top: 10px; letter-spacing: 1px; }
 
-        /* Media Queries pour la flexibilité mobile */
         @media (max-width: 500px) {
             .sem-title { flex-direction: column; align-items: flex-start; }
             .stats-group { width: 100%; }
@@ -118,7 +114,6 @@
 </div>
 
 <script>
-// TON OBJET STRUCTURE ORIGINAL
 const bulletinStructure = {
     s1: [
         { name: "UEF 1 (Mathématiques 1)", mods: [{n: "Analyse 1", c: 4, cr: 6, hasTD:true}, {n: "Algèbre 1", c: 2, cr: 4, hasTD:true}]},
@@ -135,7 +130,6 @@ const bulletinStructure = {
     ]
 };
 
-// TA FONCTION INIT AVEC LA GESTION DES COEFF/CRED
 function init() {
     const root = document.getElementById('calculator-app');
     ['s1', 's2'].forEach(s => {
@@ -158,7 +152,6 @@ function init() {
     enableArrowNavigation();
 }
 
-// TA NAVIGATION PAR FLECHES EXACTE
 function enableArrowNavigation() {
     const allInputs = Array.from(document.querySelectorAll('input[type="text"]'));
     allInputs.forEach((input, index) => {
@@ -190,7 +183,6 @@ function enableArrowNavigation() {
     });
 }
 
-// TES FONCTIONS DE CALCUL ET VALIDATION SANS CHANGEMENT
 function handleInput(el) {
     let val = el.value.replace(',', '.').replace(/[^0-9.]/g, '');
     const parts = val.split('.');
@@ -257,10 +249,20 @@ function calc() {
             else modData.forEach(m => { if(parseFloat(formatLMD(m.moy)) >= 10) crSem += m.credit; });
             ptsSem += ptsUE; coefSem += coefUE;
         });
-        sMoy[s] = ptsSem / (coefSem || 1); sCred[s] = crSem;
+        
+        let finalMoySem = ptsSem / (coefSem || 1);
+        sMoy[s] = finalMoySem;
+        
+        // MODIFICATION ICI : Si moyenne >= 10, credits = 30
+        if(parseFloat(formatLMD(finalMoySem)) >= 10) {
+            sCred[s] = 30;
+        } else {
+            sCred[s] = crSem;
+        }
+        
         const moyVal = parseFloat(formatLMD(sMoy[s]));
         document.getElementById('moy-'+s).innerText = formatLMD(sMoy[s]);
-        document.getElementById('cred-'+s).innerText = crSem;
+        document.getElementById('cred-'+s).innerText = sCred[s];
         
         const box = document.getElementById(`moy-box-${s}`);
         if (coefSem > 0) {
